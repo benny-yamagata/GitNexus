@@ -291,7 +291,7 @@ const findEnclosingFunctionId = (node: any, filePath: string): string | null => 
       if (current.type === 'init_declaration' || current.type === 'deinit_declaration') {
         const funcName = current.type === 'init_declaration' ? 'init' : 'deinit';
         const label = 'Constructor';
-        return generateId(label, `${filePath}:${funcName}`);
+        return generateId(label, `${filePath}:${funcName}:${current.startPosition.row}`);
       }
 
       if (['function_declaration', 'function_definition', 'async_function_declaration',
@@ -327,7 +327,7 @@ const findEnclosingFunctionId = (node: any, filePath: string): string | null => 
       }
 
       if (funcName) {
-        return generateId(label, `${filePath}:${funcName}`);
+        return generateId(label, `${filePath}:${funcName}:${current.startPosition.row}`);
       }
     }
     current = current.parent;

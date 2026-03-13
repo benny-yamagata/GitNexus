@@ -67,7 +67,7 @@ const findEnclosingFunction = (
       // Swift init/deinit — handle before generic cases (more specific)
       if (current.type === 'init_declaration' || current.type === 'deinit_declaration') {
         const funcName = current.type === 'init_declaration' ? 'init' : 'deinit';
-        return generateId('Constructor', `${filePath}:${funcName}`);
+        return generateId('Constructor', `${filePath}:${funcName}:${current.startPosition.row}`);
       }
 
       if (current.type === 'function_declaration' ||
@@ -122,14 +122,9 @@ const findEnclosingFunction = (
         // Try exact match first
         const nodeId = symbolTable.lookupExact(filePath, funcName);
         if (nodeId) return nodeId;
-        
-        // Try construct ID manually if lookup fails (common for non-exported internal functions)
-        // Format should match what parsing-processor generates: "Function:path/to/file:funcName"
-        // Check if we already have a node with this ID in the symbol table to be safe
-        const generatedId = generateId(label, `${filePath}:${funcName}`);
-        
-        // Ideally we should verify this ID exists, but strictly speaking if we are inside it,
-        // it SHOULD exist. Returning it is better than falling back to File.
+
+        // Construct ID manually — must include startLine to match node IDs from parsing
+        const generatedId = generateId(label, `${filePath}:${funcName}:${current.startPosition.row}`);
         return generatedId;
       }
       
